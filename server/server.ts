@@ -1,6 +1,7 @@
 const express = require("express");
 const db = require("./config/connection");
 const session = require("express-session");
+const cookieParser = require("cookie-parser");
 const MongoStore = require("connect-mongo");
 const cors = require("cors");
 const routes = require("./routes");
@@ -10,7 +11,7 @@ require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 const PORT = process.env.PORT || 3001;
 const app = express();
 
-//Set up cookies
+//Set up express app to use sessions
 const sess = {
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -23,9 +24,17 @@ const sess = {
   }),
 };
 
+const cookieOptions = {
+  maxAge: 1000 * 60 * 60 * 24 * 14, //14 days
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict",
+};
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(session(sess));
 app.use(routes);
 

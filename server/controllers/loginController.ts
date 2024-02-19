@@ -1,10 +1,31 @@
-const User = require("../models");
+const User = require("../models/User");
 const SpotifyWebApi = require("spotify-web-api-node");
 const { signToken } = require("../utils/auth");
 const path = require("path");
 require("dotenv").config(path.resolve(__dirname, "../../.env"));
 
 module.exports = {
+  authUser: async (req: any, res: any) => {
+    try {
+      const { username, password } = req.body;
+      const user = await User.findOne({ username });
+
+      if (user && (await user.isCorrectPassword(password))) {
+        signToken(res, user);
+        req.session.save(() => {
+          req.session.user_id = user._id;
+          req.session.logged_in = true;
+
+          return res.status(200).send({ user });
+        });
+      } else {
+        res.status(400).send({ message: "User not found" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: "Error authenticating user" });
+    }
+  },
   isLoggedIn: (req: any, res: any) => {
     try {
       if (req.session.logged_in) {
@@ -21,27 +42,28 @@ module.exports = {
   },
   login: async (req: any, res: any) => {
     try {
+      const { username, password } = req.body;
       const user = await User.findOne({
-        username: req.body.username,
-        email: req.body.email,
+        username,
       });
 
       if (!user) {
         return res.status(400).send({ message: "User not found" });
       }
 
-      const valid = await user.validPassword(req.body.password);
+      const valid = await user.isCorrectPassword(password);
       if (!valid) {
         return res.status(400).send({ message: "Invalid password" });
       }
 
-      const token = signToken(user);
+      signToken(res, user);
 
       req.session.save(() => {
         req.session.user_id = user._id;
         req.session.logged_in = true;
+
+        return res.status(200).send({ user });
       });
-      res.status(200).send({ token, user });
     } catch (error) {
       console.error(error);
       res.status(500).send({

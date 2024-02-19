@@ -1,25 +1,32 @@
-const User = require("../models");
+const User = require("../models/User");
 const { signToken } = require("../utils/auth");
 
 module.exports = {
   signUpUser: async function (req: any, res: any) {
     const username = req.body.username;
     const password = req.body.password;
-    const user = await User.create({ username, password });
 
-    if (!user) {
-      return res.status(400).send({
-        message: "Please provide a different username and/or password.",
+    try {
+      const user = await User.create({ username, password });
+
+      if (!user) {
+        return res.status(400).send({
+          message: "Please provide a different username and/or password.",
+        });
+      }
+
+      signToken(res, user);
+
+      req.session.save(() => {
+        req.session.user_id = user._id;
+        req.session.logged_in = true;
+
+        return res.status(200).send({ user });
       });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: "Error creating user" });
     }
-
-    const token = signToken(user);
-
-    req.session.save(() => {
-      req.session.user_id = user._id;
-      req.session.logged_in = true;
-    });
-    res.status(200).send({ token, user });
   },
   updateUser: async function (req: any, res: any) {
     const user = await User.findOneAndUpdate(
@@ -32,13 +39,14 @@ module.exports = {
       return res.status(400).send({ message: "User not found" });
     }
 
-    const token = signToken(user);
+    signToken(res, user);
 
     req.session.save(() => {
       req.session.user_id = user._id;
       req.session.logged_in = true;
+
+      return res.status(200).send({ user });
     });
-    res.status(200).send({ token, user });
   },
   deleteUser: async function (req: any, res: any) {
     const user = await User.findOneAndDelete({
