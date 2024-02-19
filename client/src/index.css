@@ -31,9 +31,25 @@
   justify-content: center;
 }
 
+.flex-container-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+}
+
 .flex-container-search {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10vh;
+}
+
+.flex-container-spinner {
+  display: flex;
   align-items: center;
   justify-content: center;
   margin-top: 10vh;
@@ -58,6 +74,72 @@
 
 .playlist-length-select {
   margin-top: 15px;
+}
+
+/* Search Results */
+
+.search-results {
+  margin-top: 2vh;
+}
+
+.spinner {
+  margin-top: 10vh;
+  height: 20vh;
+}
+
+/* Playlist Table */
+
+#playlist-buttons {
+  width: 75%;
+  display: flex;
+  align-items: stretch;
+  justify-content: end;
+  margin-top: 20px;
+}
+
+.icon-save-playlist-local {
+  height: 30px;
+}
+
+.icon-save-playlist-spotify {
+  height: 30px;
+  margin-left: 10px;
+}
+
+.icon-save-playlist-local:hover {
+  cursor: pointer;
+  color: green;
+  transition-duration: 0.5s;
+}
+
+.icon-save-playlist-spotify:hover {
+  cursor: pointer;
+  color: green;
+  transition-duration: 0.5s;
+}
+
+#table-playlist-results {
+  margin-top: 5px;
+  margin-bottom: 3rem;
+  width: 75%;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
+  border-collapse: collapse;
+}
+
+tr {
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+th {
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  padding: 10px;
+}
+
+td {
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  padding: 10px;
 }
 
 /* Login */

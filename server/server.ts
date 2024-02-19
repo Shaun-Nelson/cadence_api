@@ -36,7 +36,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(session(sess));
-app.use(routes);
+app.use("/api", routes);
 
 if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1); // trust first proxy for secure cookies

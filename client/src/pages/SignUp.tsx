@@ -10,11 +10,15 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await fetch("/signup", {
+      const response = await fetch("/api/signup", {
         method: "POST",
         body: JSON.stringify({ username, password }),
         headers: { "Content-Type": "application/json" },
       });
+      const data = await response.json();
+      console.log(data);
+
+      window.location.href = "/login";
     } catch (error) {
       console.error(error);
     }
@@ -27,8 +31,8 @@ const SignUp = () => {
         <form className='signup-card' onSubmit={handleSubmit}>
           <h3 className='signup-header'>Sign Up</h3>
           <input
-            type='email'
-            placeholder='Email'
+            type='text'
+            placeholder='Username'
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />

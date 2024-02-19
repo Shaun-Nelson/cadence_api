@@ -2,39 +2,69 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 
+//Components
+import SearchResults from "./SearchResults";
+
 const Searchbar = () => {
   const [search, setSearch] = useState("");
   const [playlistLength, setPlaylistLength] = useState(10);
-  //   const [results, setResults] = useState([]);
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
 
-  const handleSubmit = async (
-    e: React.MouseEvent<SVGSVGElement, MouseEvent>
-  ) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const data = await fetch(`${import.meta.env.VITE_API_URL}/openai`, {
-      method: "POST",
-      body: JSON.stringify({ input: search, length: playlistLength }),
-      headers: { "Content-Type": "application/json" },
-    });
+    try {
+      setLoading(true);
+      const data = await fetch(`/api/openai`, {
+        method: "POST",
+        body: JSON.stringify({ input: search, length: playlistLength }),
+        headers: { "Content-Type": "application/json" },
+      });
 
-    if (data.ok) {
-      const response = await data.json();
-      console.log(response);
-      //   setResults(response);
-    } else {
-      console.error("Failed to fetch data");
+      if (data.ok) {
+        const response = await data.json();
+        console.log(response);
+        setResults(response);
+        setLoading(false);
+      } else {
+        console.error("Failed to fetch data");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleClick = async () => {
+    try {
+      setLoading(true);
+      const data = await fetch(`/api/openai`, {
+        method: "POST",
+        body: JSON.stringify({ input: search, length: playlistLength }),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (data.ok) {
+        const response = await data.json();
+        console.log(response);
+        setResults(response);
+        setLoading(false);
+      } else {
+        console.error("Failed to fetch data");
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
   return (
     <>
       <div className='flex-container-search'>
-        <form className='searchbar'>
+        <form className='searchbar' onSubmit={handleSubmit}>
           <input
             className='search-input'
             type='text'
@@ -45,7 +75,7 @@ const Searchbar = () => {
           <FontAwesomeIcon
             className='search-icon'
             icon={faMagnifyingGlass}
-            onClick={handleSubmit}
+            onClick={handleClick}
           />
         </form>
         <form className='playlist-length-select'>
@@ -66,6 +96,10 @@ const Searchbar = () => {
           </label>
         </form>
       </div>
+
+      {results.length > 0 && (
+        <SearchResults results={results} loading={loading} />
+      )}
     </>
   );
 };

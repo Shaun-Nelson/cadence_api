@@ -6,15 +6,18 @@ const Logout = () => {
 
   useEffect(() => {
     const logout = async () => {
-      const response = await fetch("/logout", {
-        method: "GET",
-      });
+      try {
+        const response = await fetch("/api/logout");
 
-      if (response.ok) {
-        navigate("/");
+        if (response.ok) {
+          navigate("/");
+        } else {
+          console.error("Failed to log out");
+        }
+      } catch (error) {
+        console.error(error);
       }
     };
-
     logout();
   }, [navigate]);
 

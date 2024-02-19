@@ -6,7 +6,7 @@ const NavBar = () => {
 
   useEffect(() => {
     const checkLoginStatus = async () => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/login`);
+      const response = await fetch(`/api/login`);
 
       if (response.ok) {
         const data = await response.json();
