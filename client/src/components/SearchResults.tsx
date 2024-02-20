@@ -4,15 +4,17 @@ import { faSpinner, faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
 
 interface SearchResult {
-  title: string;
-  artists: Array<string>;
-  duration: string;
-  previewUrl: string;
-  image: string;
-  link: string;
+  results: {
+    title: string;
+    image: string;
+    link: string;
+    artists: [];
+    duration: string;
+    previewUrl: string;
+  }[];
 }
 
-const SearchResults = ({ results }: { results: SearchResult[] }) => {
+const SearchResults = ({ results }: SearchResult) => {
   const [playlistName, setPlaylistName] = useState("");
   const [playlistDescription, setPlaylistDescription] = useState("");
 
@@ -65,6 +67,7 @@ const SearchResults = ({ results }: { results: SearchResult[] }) => {
               <input
                 type='text'
                 placeholder='Playlist Name'
+                required
                 name={playlistName}
                 id='playlistName'
                 onChange={(e) => setPlaylistName(e.target.value)}
@@ -135,7 +138,12 @@ const SearchResults = ({ results }: { results: SearchResult[] }) => {
       ) : (
         // If there are no results, display a spinner
         <div className='flex-container-spinner'>
-          <FontAwesomeIcon className='spinner' icon={faSpinner} spin />
+          <FontAwesomeIcon
+            className='spinner'
+            icon={faSpinner}
+            spin
+            size='3x'
+          />
         </div>
       )}
     </div>

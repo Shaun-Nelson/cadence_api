@@ -7,7 +7,7 @@ const {
 } = require("../../controllers/loginController");
 const { protect } = require("../../utils/auth");
 
-// "/login" route
+// "/api/login" route
 router.route("/").get(isLoggedIn).post(login);
 router.route("/spotify").get(protect, loginSpotify);
 router.route("/auth").post(protect, authUser);

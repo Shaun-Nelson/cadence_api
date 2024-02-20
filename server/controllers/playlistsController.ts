@@ -3,7 +3,9 @@ const Playlist = require("../models/Playlist");
 module.exports = {
   getPlaylists: async function (req: any, res: any) {
     try {
-      const playlists = await Playlist.find({ username: req.user.username });
+      const playlists = await Playlist.find({
+        username: req.user.username,
+      }).populate("tracks");
 
       res.status(200).json(playlists);
     } catch (error) {
@@ -12,24 +14,23 @@ module.exports = {
   },
   createPlaylist: async function (req: any, res: any) {
     try {
-      const { title, artists, duration, previewUrl, image, link } =
-        req.body.results;
+      const tracks = req.body.results.map((track: any) => {
+        const { title, artists, duration, previewUrl, image, link } = track;
 
-      console.log(req.body.results);
+        return {
+          title,
+          artists,
+          duration,
+          previewUrl,
+          image,
+          link,
+        };
+      });
 
       const playlist = await Playlist.create({
         name: req.body.playlistName,
         description: req.body.playlistDescription,
-        tracks: [
-          {
-            title,
-            artists,
-            duration,
-            previewUrl,
-            image,
-            link,
-          },
-        ],
+        tracks,
         username: req.user.username,
       });
 
@@ -40,13 +41,12 @@ module.exports = {
   },
   deletePlaylist: async function (req: any, res: any) {
     try {
-      const playlist = await Playlist.findOneAndDelete({
+      await Playlist.findOneAndDelete({
         name: req.body.name,
         user: req.user._id,
       });
-      console.log(playlist);
     } catch (error) {
-      res.status(500).send({ message: "Error deleting playlist" });
+      res.status(500).send({ message: "Error deleting playlist", error });
     }
   },
 };

@@ -8,11 +8,11 @@ const expiration = "14d";
 
 module.exports = {
   // This function will be used to sign a token
-  signToken: function (res: any, user: any) {
+  signToken: function (res: any, userId: any) {
     try {
-      const payload = { username: user.username, _id: user._id };
+      const payload = { _id: userId };
 
-      const token = jwt.sign({ data: payload }, secret, {
+      const token = jwt.sign(payload, secret, {
         expiresIn: expiration,
       });
 
@@ -73,9 +73,15 @@ module.exports = {
     if (token) {
       try {
         const decoded = jwt.verify(token, secret);
-        console.log(decoded.data._id);
-        req.user = await User.findById(decoded.data._id).select("-password"); // Here we are setting the user to the user found in the database by the id stored in the token
-        next();
+
+        const user = await User.findById(decoded._id);
+
+        if (!user) {
+          return res.status(401).send("Unauthorized. Invalid token.");
+        } else {
+          req.user = user;
+          return next();
+        }
       } catch (error) {
         console.error(error);
         return res.status(401).send("Unauthorized. Invalid token.");

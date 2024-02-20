@@ -15,6 +15,7 @@ const Logout = () => {
           navigate("/");
         } else {
           console.error("Failed to log out");
+          return <div>Failed to log out</div>;
         }
       } catch (error) {
         console.error(error);

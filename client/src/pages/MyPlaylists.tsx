@@ -1,16 +1,26 @@
 import { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+
 //Components
 import NavBar from "../components/NavBar";
+import Playlist from "../components/Playlist";
 
 const MyPlaylists = () => {
   const [playlists, setPlaylists] = useState<
     {
-      title: string;
-      image: string;
+      name: string;
+      description: string;
+      tracks: {
+        title: string;
+        image: string;
+        link: string;
+        artists: [];
+        duration: string;
+        previewUrl: string;
+      }[];
       link: string;
-      artists: [];
-      duration: string;
-      previewUrl: string;
+      username: string;
     }[]
   >([]);
 
@@ -38,30 +48,21 @@ const MyPlaylists = () => {
   return (
     <>
       <NavBar />
-      <div className='my-playlists'>
-        <h1>My Playlists</h1>
-        <div className='playlists'>
-          {playlists.length > 0 ? (
-            playlists.map((playlist, index) => {
-              return (
-                <div key={index} className='playlist'>
-                  <img src={playlist.image} alt='playlist' />
-                  <a href={playlist.link} target='_blank' rel='noreferrer'>
-                    {playlist.title}
-                  </a>
-                </div>
-              );
-            })
-          ) : (
-            <p>No playlists found</p>
-          )}
-        </div>
-
-        <div className='playlist-form'>
-          <button className='button' onClick={() => window.location.reload()}>
-            Refresh
-          </button>
-        </div>
+      <div className='flex-container-column '>
+        {playlists.length > 0 ? (
+          playlists.map((playlist, index) => {
+            return <Playlist key={index} playlist={playlist} />;
+          })
+        ) : (
+          <div className='flex-container-spinner'>
+            <FontAwesomeIcon
+              className='spinner'
+              icon={faSpinner}
+              spin
+              size='3x'
+            />
+          </div>
+        )}
       </div>
     </>
   );

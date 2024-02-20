@@ -11,7 +11,7 @@ module.exports = {
       const user = await User.findOne({ username });
 
       if (user && (await user.isCorrectPassword(password))) {
-        signToken(res, user);
+        signToken(res, user._id);
         req.session.save(() => {
           req.session.user_id = user._id;
           req.session.logged_in = true;
@@ -56,13 +56,13 @@ module.exports = {
         return res.status(400).send({ message: "Invalid password" });
       }
 
-      signToken(res, user);
+      const token = signToken(res, user._id);
 
       req.session.save(() => {
         req.session.user_id = user._id;
         req.session.logged_in = true;
 
-        return res.status(200).send({ user });
+        return res.status(201).json({ token });
       });
     } catch (error) {
       console.error(error);
