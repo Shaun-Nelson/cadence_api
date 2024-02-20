@@ -73,14 +73,19 @@ module.exports = {
     }
   },
   loginSpotify: async (req: any, res: any) => {
-    const spotifyApi = new SpotifyWebApi({
-      clientId: process.env.CLIENT_ID,
-      clientSecret: process.env.CLIENT_SECRET,
-      redirectUri: process.env.REDIRECT_URI,
-    });
-    const scopes = ["user-read-private", "user-read-email"];
-    const authorizeURL = spotifyApi.createAuthorizeURL(scopes);
+    try {
+      const spotifyApi = new SpotifyWebApi({
+        clientId: process.env.CLIENT_ID,
+        clientSecret: process.env.CLIENT_SECRET,
+        redirectUri: process.env.REDIRECT_URI,
+      });
+      const scopes = ["user-read-private", "user-read-email"];
+      const authorizeURL = spotifyApi.createAuthorizeURL(scopes);
 
-    res.status(200).redirect(authorizeURL);
+      res.status(200).json({ url: authorizeURL });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: "Error logging in with Spotify" });
+    }
   },
 };

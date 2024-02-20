@@ -8,10 +8,11 @@ const LoginCard = () => {
     e.preventDefault();
 
     try {
-      const response = fetch("/api/login", {
+      const response = fetch(`${import.meta.env.VITE_API_URL}/login`, {
         method: "POST",
         body: JSON.stringify({ username, password }),
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
       });
 
       console.log(response);

@@ -8,11 +8,6 @@ const playlistSchema = new Schema({
   description: {
     type: String,
   },
-  images: [
-    {
-      type: String,
-    },
-  ],
   tracks: [
     {
       title: {
@@ -34,9 +29,6 @@ const playlistSchema = new Schema({
       },
       image: {
         type: String,
-      },
-      nextTracks: {
-        type: Array,
       },
     },
   ],

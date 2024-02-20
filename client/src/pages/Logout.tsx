@@ -7,7 +7,9 @@ const Logout = () => {
   useEffect(() => {
     const logout = async () => {
       try {
-        const response = await fetch("/api/logout");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
+          credentials: "include",
+        });
 
         if (response.ok) {
           navigate("/");

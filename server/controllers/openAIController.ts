@@ -36,27 +36,17 @@ module.exports = {
       // Parse the JSON response, get the songs array
       const songs = JSON.parse(chatCompletion.choices[0].message.content);
 
-      // get the spotify api object and refresh token from the session
-      if (req.session.spotifyApi) {
-        var spotifyApi = req.session.spotifyApi;
-        spotifyApi.setRefreshToken(req.session.refresh_token);
+      // If the Spotify API is not already authorized, authorize it
+      const spotifyApi = new SpotifyWebApi({
+        clientId: process.env.CLIENT_ID,
+        clientSecret: process.env.CLIENT_SECRET,
+        redirectUri: process.env.REDIRECT_URI,
+      });
 
-        // refresh the access token
-        const data = await spotifyApi.refreshAccessToken();
-        const accessToken = data.body["access_token"];
-        spotifyApi.setAccessToken(accessToken);
-      } else {
-        var spotifyApi = new SpotifyWebApi({
-          clientId: process.env.CLIENT_ID,
-          clientSecret: process.env.CLIENT_SECRET,
-          redirectUri: process.env.REDIRECT_URI,
-        });
-
-        //get access token
-        const data = await spotifyApi.clientCredentialsGrant();
-        const accessToken = data.body["access_token"];
-        spotifyApi.setAccessToken(accessToken);
-      }
+      //get access token
+      const data = await spotifyApi.clientCredentialsGrant();
+      const accessToken = data.body["access_token"];
+      spotifyApi.setAccessToken(accessToken);
 
       // iterate through the songs and add the preview url, image, and uri of each song
       for (let song in songs) {

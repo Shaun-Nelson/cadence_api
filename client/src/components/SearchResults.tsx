@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
@@ -11,32 +12,71 @@ interface SearchResult {
   link: string;
 }
 
-const SearchResults = ({
-  results,
-  loading,
-}: {
-  results: SearchResult[];
-  loading: boolean;
-}) => {
-  const handleLocalSave = () => {
-    console.log("Local save");
+const SearchResults = ({ results }: { results: SearchResult[] }) => {
+  const [playlistName, setPlaylistName] = useState("");
+  const [playlistDescription, setPlaylistDescription] = useState("");
+
+  const handleLocalSave = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/playlists`,
+        {
+          method: "POST",
+          body: JSON.stringify({ results, playlistName, playlistDescription }),
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleSpotfiySave = () => {
-    console.log("Spotify save");
+  const handleSpotfiySave = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/login/spotify`,
+        {
+          credentials: "include",
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        window.location.href = data.url;
+      } else {
+        console.error("Failed to fetch data");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
     <div className='search-results'>
-      {loading ? (
-        // If there are no results, display a spinner
-        <div className='flex-container-spinner'>
-          <FontAwesomeIcon className='spinner' icon={faSpinner} spin />
-        </div>
-      ) : (
+      {results.length > 0 ? (
         // If there are results, display the results in a table
         <div className='flex-container-column'>
           <div className='flex-container-row' id='playlist-buttons'>
+            <form className='playlist-form'>
+              <input
+                type='text'
+                placeholder='Playlist Name'
+                name={playlistName}
+                id='playlistName'
+                onChange={(e) => setPlaylistName(e.target.value)}
+              />
+              <input
+                type='text'
+                placeholder='Playlist Description'
+                name={playlistDescription}
+                id='playlistDescription'
+                onChange={(e) => setPlaylistDescription(e.target.value)}
+              />
+            </form>
             <FontAwesomeIcon
               className='icon-save-playlist-local'
               icon={faFloppyDisk}
@@ -91,6 +131,11 @@ const SearchResults = ({
               })}
             </tbody>
           </table>
+        </div>
+      ) : (
+        // If there are no results, display a spinner
+        <div className='flex-container-spinner'>
+          <FontAwesomeIcon className='spinner' icon={faSpinner} spin />
         </div>
       )}
     </div>

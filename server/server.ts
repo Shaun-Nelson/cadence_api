@@ -24,17 +24,15 @@ const sess = {
   }),
 };
 
-const cookieOptions = {
-  maxAge: 1000 * 60 * 60 * 24 * 14, //14 days
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "strict",
-};
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
-app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
+app.use(cookieParser());
 app.use(session(sess));
 app.use("/api", routes);
 
