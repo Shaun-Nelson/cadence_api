@@ -9,6 +9,7 @@ const Searchbar = () => {
   const [search, setSearch] = useState("");
   const [playlistLength, setPlaylistLength] = useState(10);
   const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -18,6 +19,8 @@ const Searchbar = () => {
     e.preventDefault();
 
     try {
+      setLoading(true);
+
       const data = await fetch(`${import.meta.env.VITE_API_URL}/openai`, {
         method: "POST",
         body: JSON.stringify({ input: search, length: playlistLength }),
@@ -28,17 +31,21 @@ const Searchbar = () => {
       if (data.ok) {
         const response = await data.json();
         console.log(response);
+        setLoading(false);
         setResults(response);
       } else {
         console.error("Failed to fetch data");
       }
     } catch (error) {
+      setLoading(false);
       console.error(error);
     }
   };
 
   const handleClick = async () => {
     try {
+      setLoading(true);
+
       const data = await fetch(`${import.meta.env.VITE_API_URL}/openai`, {
         method: "POST",
         body: JSON.stringify({ input: search, length: playlistLength }),
@@ -49,11 +56,13 @@ const Searchbar = () => {
       if (data.ok) {
         const response = await data.json();
         console.log(response);
+        setLoading(false);
         setResults(response);
       } else {
         console.error("Failed to fetch data");
       }
     } catch (error) {
+      setLoading(false);
       console.error(error);
     }
   };
@@ -93,8 +102,7 @@ const Searchbar = () => {
           </label>
         </form>
       </div>
-
-      {results.length > 0 && <SearchResults results={results} />}
+      <SearchResults results={results} loading={loading} />
     </>
   );
 };

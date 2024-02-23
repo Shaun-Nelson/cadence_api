@@ -90,11 +90,27 @@
 /* Playlist Table */
 
 #playlist-buttons {
-  width: 75%;
+  width: 100%;
   display: flex;
-  align-items: stretch;
-  justify-content: end;
-  margin-top: 20px;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.playlist-form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+
+.success-message {
+  color: green;
+  margin-top: 10px;
 }
 
 .icon-save-playlist-local {
@@ -112,10 +128,32 @@
   transition-duration: 0.5s;
 }
 
+.icon-save-playlist-local:active {
+  color: rgb(0, 255, 0);
+  transition-duration: 0.5s;
+}
+
+.icon-save-playlist-local-error {
+  height: 30px;
+  margin-left: 10px;
+  color: red;
+}
+
 .icon-save-playlist-spotify:hover {
   cursor: pointer;
   color: green;
   transition-duration: 0.5s;
+}
+
+.icon-save-playlist-spotify:active {
+  color: rgb(0, 255, 0);
+  transition-duration: 0.5s;
+}
+
+.icon-save-playlist-spotify-error {
+  height: 30px;
+  margin-left: 10px;
+  color: red;
 }
 
 #table-playlist-results {

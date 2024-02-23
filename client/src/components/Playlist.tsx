@@ -27,11 +27,15 @@ type TrackType = {
 const Playlist = ({ playlist }: PlaylistProps) => {
   return (
     <div className='playlist'>
-      <h2>{playlist.name}</h2>
-      <p>{playlist.description}</p>
-      <a href={playlist.link} target='_blank' rel='noreferrer'>
-        Spotify Playlist
-      </a>
+      {playlist.name && (
+        <>
+          <h2>{playlist.name}</h2>
+          <p>{playlist.description}</p>
+          <a href={playlist.link} target='_blank' rel='noreferrer'>
+            Spotify Playlist
+          </a>
+        </>
+      )}
       <table id='table-playlist-results'>
         <tbody>
           <tr>

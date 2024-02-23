@@ -7,7 +7,7 @@ module.exports = {
         username: req.user.username,
       }).populate("tracks");
 
-      res.status(200).json(playlists);
+      res.status(201).json(playlists);
     } catch (error) {
       res.status(500).send({ message: "Error getting playlists" });
     }
@@ -29,14 +29,16 @@ module.exports = {
 
       const playlist = await Playlist.create({
         name: req.body.playlistName,
-        description: req.body.playlistDescription,
+        description: req.body.playlistDescription
+          ? req.body.playlistDescription
+          : "",
         tracks,
         username: req.user.username,
       });
 
       res.status(201).json({ message: "Playlist created", playlist });
     } catch (error) {
-      res.status(500).send({ message: "Error creating playlist" });
+      res.status(500).json({ message: "Error creating playlist" });
     }
   },
   deletePlaylist: async function (req: any, res: any) {
