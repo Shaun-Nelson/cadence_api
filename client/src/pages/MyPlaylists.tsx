@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 //Components
-import NavBar from "../components/NavBar";
 import Playlist from "../components/Playlist";
 
 const MyPlaylists = () => {
@@ -46,25 +45,22 @@ const MyPlaylists = () => {
   }, []);
 
   return (
-    <>
-      <NavBar />
-      <div className='flex-container-column '>
-        {playlists.length > 0 ? (
-          playlists.map((playlist, index) => {
-            return <Playlist key={index} playlist={playlist} />;
-          })
-        ) : (
-          <div className='flex-container-spinner'>
-            <FontAwesomeIcon
-              className='spinner'
-              icon={faSpinner}
-              spin
-              size='3x'
-            />
-          </div>
-        )}
-      </div>
-    </>
+    <div className='flex-container-column '>
+      {playlists.length > 0 ? (
+        playlists.map((playlist, index) => {
+          return <Playlist key={index} playlist={playlist} />;
+        })
+      ) : (
+        <div className='flex-container-spinner'>
+          <FontAwesomeIcon
+            className='spinner'
+            icon={faSpinner}
+            spin
+            size='3x'
+          />
+        </div>
+      )}
+    </div>
   );
 };
 
