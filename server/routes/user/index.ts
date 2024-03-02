@@ -5,7 +5,7 @@ const {
 } = require("../../controllers/userController");
 const { protect } = require("../../utils/auth");
 
-// "/user" route
+// /api/users
 router.route("/").get(protect, getUserProfile).put(protect, updateUserProfile);
 
 module.exports = router;

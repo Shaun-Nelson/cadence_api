@@ -1,36 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useLoginMutation } from "../slices/usersApiSlice";
+import { setCredentials } from "../slices/authSlice";
+import { RootState } from "../store";
+import { toast } from "react-toastify";
 
 const LoginCard = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const Navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [login] = useLoginMutation();
+
+  const { userInfo } = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    if (userInfo) {
+      Navigate("/");
+    }
+  }, [userInfo, Navigate]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
-        method: "POST",
-        body: JSON.stringify({ username, password }),
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-      } else {
-        console.error("Failed to fetch data");
-      }
-
-      setUsername("");
-      setPassword("");
-
+      const res = await login({ username, password }).unwrap();
+      dispatch(setCredentials({ ...res }));
       Navigate("/");
     } catch (error) {
-      console.error(error);
+      toast.error("Invalid username or password");
     }
   };
 
