@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setResults } from "../slices/resultsSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 
@@ -8,8 +10,9 @@ import SearchResults from "./SearchResults";
 const Searchbar = () => {
   const [search, setSearch] = useState("");
   const [playlistLength, setPlaylistLength] = useState(10);
-  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -32,7 +35,7 @@ const Searchbar = () => {
         const response = await data.json();
         console.log(response);
         setLoading(false);
-        setResults(response);
+        dispatch(setResults(response));
       } else {
         console.error("Failed to fetch data");
       }
@@ -57,7 +60,7 @@ const Searchbar = () => {
         const response = await data.json();
         console.log(response);
         setLoading(false);
-        setResults(response);
+        dispatch(setResults(response));
       } else {
         console.error("Failed to fetch data");
       }
@@ -102,7 +105,7 @@ const Searchbar = () => {
           </label>
         </form>
       </div>
-      <SearchResults results={results} loading={loading} />
+      <SearchResults loading={loading} />
     </>
   );
 };

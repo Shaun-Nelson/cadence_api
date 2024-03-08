@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useGetPlaylistsMutation } from "../slices/playlistApiSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
@@ -23,34 +24,24 @@ const MyPlaylists = () => {
     }[]
   >([]);
 
-  useEffect(() => {
-    const getPlaylists = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/playlists`,
-          {
-            credentials: "include",
-          }
-        );
+  const [getPlaylists, { isLoading }] = useGetPlaylistsMutation();
 
-        const data = await response.json();
-        console.log(data);
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const data = await getPlaylists({}).unwrap();
         setPlaylists(data);
       } catch (error) {
         console.error(error);
       }
     };
 
-    getPlaylists();
-  }, []);
+    getData();
+  }, [getPlaylists]);
 
   return (
     <div className='flex-container-column '>
-      {playlists.length > 0 ? (
-        playlists.map((playlist, index) => {
-          return <Playlist key={index} playlist={playlist} />;
-        })
-      ) : (
+      {isLoading ? (
         <div className='flex-container-spinner'>
           <FontAwesomeIcon
             className='spinner'
@@ -59,6 +50,12 @@ const MyPlaylists = () => {
             size='3x'
           />
         </div>
+      ) : playlists.length > 0 ? (
+        playlists.map((playlist, index) => {
+          return <Playlist key={index} playlist={playlist} />;
+        })
+      ) : (
+        <h2>No playlists found</h2>
       )}
     </div>
   );

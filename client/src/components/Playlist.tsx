@@ -1,3 +1,9 @@
+import { useDeletePlaylistMutation } from "../slices/playlistApiSlice";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+// USE A MODAL TO CONFIRM DELETION
+
 interface PlaylistProps {
   playlist: {
     name: string;
@@ -25,6 +31,16 @@ type TrackType = {
 };
 
 const Playlist = ({ playlist }: PlaylistProps) => {
+  const [deletePlaylist] = useDeletePlaylistMutation();
+
+  const handlePlaylistDelete = async (name: string) => {
+    try {
+      await deletePlaylist({ name }).unwrap();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className='playlist'>
       {playlist.name && (
@@ -34,6 +50,10 @@ const Playlist = ({ playlist }: PlaylistProps) => {
           <a href={playlist.link} target='_blank' rel='noreferrer'>
             Spotify Playlist
           </a>
+          <FontAwesomeIcon
+            onClick={() => handlePlaylistDelete(playlist.name)}
+            icon={faTrash}
+          />
         </>
       )}
       <table id='table-playlist-results'>

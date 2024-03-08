@@ -2,47 +2,30 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useCreatePlaylistMutation } from "../slices/playlistApiSlice";
+import { RootState } from "../store";
 
-type Result = {
-  image: string;
-  link: string;
-  title: string;
-  artists: string[];
-  duration: string;
-  previewUrl: string;
-};
-
-type PlaylistResultsProps = {
-  results: Result[];
-};
-
-const PlaylistButtons: React.FC<PlaylistResultsProps> = ({ results }) => {
+const PlaylistButtons = () => {
   const [playlistName, setPlaylistName] = useState("");
   const [playlistDescription, setPlaylistDescription] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const { results } = useSelector((state: RootState) => state.results);
+  const [createPlaylist, { isError }] = useCreatePlaylistMutation();
+
   const handleLocalSave = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/playlists`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            results,
-            playlistName,
-            playlistDescription,
-          }),
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
+      await createPlaylist({
+        name: playlistName,
+        description: playlistDescription,
+        tracks: results,
+      });
 
-      if (!response.ok) {
+      if (isError) {
         setError("Please log in to save playlist.");
       } else {
-        const data = await response.json();
-        console.log(data);
         setSuccess("Playlist saved!");
         setError("");
       }

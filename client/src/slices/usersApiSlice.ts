@@ -23,8 +23,18 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         withCredentials: true,
       }),
     }),
+    loginSpotify: builder.mutation({
+      query: () => ({
+        url: `${USERS_URL}/login/spotify`,
+        withCredentials: true,
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation, useIsLoggedInMutation, useLogoutMutation } =
-  usersApiSlice;
+export const {
+  useLoginMutation,
+  useIsLoggedInMutation,
+  useLogoutMutation,
+  useLoginSpotifyMutation,
+} = usersApiSlice;

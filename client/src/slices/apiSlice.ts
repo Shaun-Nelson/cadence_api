@@ -28,9 +28,27 @@ export const apiSlice = createApi({
         body,
       }),
     }),
-    getPlaylists: builder.query({
+    getPlaylists: builder.mutation({
       query: () => "/playlists",
-      providesTags: ["Playlist"],
+    }),
+    createPlaylist: builder.mutation({
+      query: (body) => ({
+        url: "/playlists",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Playlist"],
+    }),
+    deletePlaylist: builder.mutation({
+      query: (body) => ({
+        url: "/playlists",
+        method: "DELETE",
+        body,
+      }),
+      invalidatesTags: ["Playlist"],
+    }),
+    loginSpotify: builder.mutation({
+      query: () => "/login/spotify",
     }),
   }),
 });

@@ -18,9 +18,15 @@ const authSlice = createSlice({
       state.userInfo = null;
       localStorage.removeItem("userInfo");
     },
+    loginSpotify: () => {
+      fetch("/api/login/spotify", {
+        method: "GET",
+        credentials: "include",
+      });
+    },
   },
 });
 
-export const { setCredentials, logout } = authSlice.actions;
+export const { setCredentials, logout, loginSpotify } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -7,7 +7,7 @@ module.exports = {
         username: req.user.username,
       }).populate("tracks");
 
-      res.status(201).json(playlists);
+      res.status(200).json(playlists);
     } catch (error) {
       res.status(500).send({ message: "Error getting playlists" });
     }
@@ -43,10 +43,11 @@ module.exports = {
   },
   deletePlaylist: async function (req: any, res: any) {
     try {
-      await Playlist.findOneAndDelete({
+      const playlist = await Playlist.deleteOne({
         name: req.body.name,
-        user: req.user._id,
+        username: req.user.username,
       });
+      res.status(200).json({ message: "Playlist deleted", playlist });
     } catch (error) {
       res.status(500).send({ message: "Error deleting playlist", error });
     }

@@ -6,24 +6,16 @@ import PlaylistResults from "./PlaylistResults";
 import PlaylistButtons from "./PlaylistButtons";
 
 interface SearchResult {
-  results: {
-    image: string;
-    link: string;
-    title: string;
-    artists: string[];
-    duration: string;
-    previewUrl: string;
-  }[];
   loading: boolean;
 }
 
-const SearchResults = ({ results, loading }: SearchResult) => {
+const SearchResults = ({ loading }: SearchResult) => {
   return (
     <div className='search-results'>
       {!loading ? (
         <div className='flex-container-column'>
-          <PlaylistButtons results={results} />
-          <PlaylistResults results={results} />
+          <PlaylistButtons />
+          <PlaylistResults />
         </div>
       ) : (
         <div className='flex-container-spinner'>

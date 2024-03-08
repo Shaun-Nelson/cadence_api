@@ -5,10 +5,6 @@ module.exports = {
     try {
       const user = await User.findOne({ _id: req.session.user_id });
 
-      if (!req.session.logged_in) {
-        return res.status(400).send({ message: "User not logged in" });
-      }
-
       if (user) {
         res.clearCookie("connect.sid");
         res.cookie("jwt", "", {
