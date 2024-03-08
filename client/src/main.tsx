@@ -18,6 +18,7 @@ import Logout from "./pages/Logout";
 import SignUp from "./pages/SignUp";
 import MyPlaylists from "./pages/MyPlaylists";
 import Page404 from "./pages/404.tsx";
+import UserProfile from "./pages/UserProfile.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -27,6 +28,7 @@ const router = createBrowserRouter(
       <Route path='/logout' element={<Logout />} />,
       <Route path='/signup' element={<SignUp />} />,
       <Route path='/playlists' element={<MyPlaylists />} />
+      <Route path='/profile' element={<UserProfile />} />
       <Route path='*' element={<Page404 />} />
     </Route>
   )

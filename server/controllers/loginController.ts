@@ -79,7 +79,12 @@ module.exports = {
         clientSecret: process.env.CLIENT_SECRET,
         redirectUri: process.env.REDIRECT_URI,
       });
-      const scopes = ["user-read-private", "user-read-email"];
+      const scopes = [
+        "playlist-modify-public",
+        "playlist-modify-private",
+        "playlist-read-private",
+        "playlist-read-collaborative",
+      ];
       const authorizeURL = spotifyApi.createAuthorizeURL(scopes);
 
       res.status(200).json({ url: authorizeURL });

@@ -3,8 +3,12 @@ import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { useCreatePlaylistMutation } from "../slices/playlistApiSlice";
+import {
+  useCreatePlaylistMutation,
+  useSaveSpotifyPlaylistMutation,
+} from "../slices/playlistApiSlice";
 import { RootState } from "../store";
+import { toast } from "react-toastify";
 
 const PlaylistButtons = () => {
   const [playlistName, setPlaylistName] = useState("");
@@ -14,17 +18,19 @@ const PlaylistButtons = () => {
 
   const { results } = useSelector((state: RootState) => state.results);
   const [createPlaylist, { isError }] = useCreatePlaylistMutation();
+  const [saveSpotifyPlaylist] = useSaveSpotifyPlaylistMutation();
 
   const handleLocalSave = async () => {
     try {
       await createPlaylist({
         name: playlistName,
         description: playlistDescription,
-        tracks: results,
+        tracks: JSON.stringify(results),
       });
 
       if (isError) {
         setError("Please log in to save playlist.");
+        setSuccess("");
       } else {
         setSuccess("Playlist saved!");
         setError("");
@@ -36,21 +42,17 @@ const PlaylistButtons = () => {
 
   const handleSpotfiySave = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/login/spotify`,
-        {
-          credentials: "include",
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        window.location.href = data.url;
-      } else {
-        console.error("Failed to fetch data");
-      }
+      await saveSpotifyPlaylist({
+        name: playlistName,
+        description: playlistDescription,
+        tracks: JSON.stringify(results),
+      }).unwrap();
+      toast.success("Playlist saved to Spotify!");
     } catch (error) {
       console.error(error);
+      toast.error(
+        "Error saving playlist to Spotify. Please connect via User Profile."
+      );
     }
   };
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setResults } from "../slices/resultsSlice";
+import { useGetAiDataMutation } from "../slices/thirdPartyApiSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 
@@ -10,9 +11,10 @@ import SearchResults from "./SearchResults";
 const Searchbar = () => {
   const [search, setSearch] = useState("");
   const [playlistLength, setPlaylistLength] = useState(10);
-  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
+
+  const [getAiData, { isLoading }] = useGetAiDataMutation();
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -22,50 +24,24 @@ const Searchbar = () => {
     e.preventDefault();
 
     try {
-      setLoading(true);
-
-      const data = await fetch(`${import.meta.env.VITE_API_URL}/openai`, {
-        method: "POST",
-        body: JSON.stringify({ input: search, length: playlistLength }),
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-
-      if (data.ok) {
-        const response = await data.json();
-        console.log(response);
-        setLoading(false);
-        dispatch(setResults(response));
-      } else {
-        console.error("Failed to fetch data");
-      }
+      const res = await getAiData({
+        input: search,
+        length: playlistLength,
+      }).unwrap();
+      dispatch(setResults(res));
     } catch (error) {
-      setLoading(false);
       console.error(error);
     }
   };
 
   const handleClick = async () => {
     try {
-      setLoading(true);
-
-      const data = await fetch(`${import.meta.env.VITE_API_URL}/openai`, {
-        method: "POST",
-        body: JSON.stringify({ input: search, length: playlistLength }),
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-
-      if (data.ok) {
-        const response = await data.json();
-        console.log(response);
-        setLoading(false);
-        dispatch(setResults(response));
-      } else {
-        console.error("Failed to fetch data");
-      }
+      const res = await getAiData({
+        input: search,
+        length: playlistLength,
+      }).unwrap();
+      dispatch(setResults(res));
     } catch (error) {
-      setLoading(false);
       console.error(error);
     }
   };
@@ -105,7 +81,7 @@ const Searchbar = () => {
           </label>
         </form>
       </div>
-      <SearchResults loading={loading} />
+      <SearchResults loading={isLoading} />
     </>
   );
 };

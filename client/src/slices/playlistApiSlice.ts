@@ -1,19 +1,19 @@
 import { apiSlice } from "./apiSlice";
 
-const USERS_URL = "/api/playlists";
+const API_URL = "/api/playlists";
 
 export const playlistsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getPlaylists: builder.mutation({
       query: () => ({
-        url: `${USERS_URL}`,
+        url: `${API_URL}`,
         method: "GET",
         withCredentials: true,
       }),
     }),
     createPlaylist: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}`,
+        url: `${API_URL}`,
         method: "POST",
         body: data,
         withCredentials: true,
@@ -21,8 +21,16 @@ export const playlistsApiSlice = apiSlice.injectEndpoints({
     }),
     deletePlaylist: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}`,
+        url: `${API_URL}`,
         method: "DELETE",
+        body: data,
+        withCredentials: true,
+      }),
+    }),
+    saveSpotifyPlaylist: builder.mutation({
+      query: (data) => ({
+        url: `${API_URL}/spotify`,
+        method: "POST",
         body: data,
         withCredentials: true,
       }),
@@ -34,4 +42,5 @@ export const {
   useGetPlaylistsMutation,
   useCreatePlaylistMutation,
   useDeletePlaylistMutation,
+  useSaveSpotifyPlaylistMutation,
 } = playlistsApiSlice;

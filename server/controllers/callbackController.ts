@@ -21,6 +21,10 @@ module.exports = {
       spotifyApi.setAccessToken(accessToken);
       spotifyApi.setRefreshToken(refreshToken);
 
+      res.cookie("access_token", accessToken);
+
+      res.cookie("refresh_token", refreshToken);
+
       req.session.save(() => {
         //set the access token and refresh token as session variables
         req.session.access_token = accessToken;
@@ -30,14 +34,14 @@ module.exports = {
         req.session.spotifyApi = spotifyApi;
 
         //redirect to the home page
-        return res.status(200).redirect(process.env.CLIENT_URI);
+        return res.status(200).redirect(process.env.CLIENT_URL);
       });
     } catch (error) {
       console.error(error);
       res
         .status(500)
         .send({ message: "Invalid Spotify token" })
-        .redirect(process.env.CLIENT_URI);
+        .redirect(process.env.CLIENT_URL);
     }
   },
 };

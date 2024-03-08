@@ -46,6 +46,9 @@ const NavBar = () => {
               <Link to='/playlists'>My Playlists</Link>
             </li>
             <li className='nav-item'>
+              <Link to='/profile'>User Profile</Link>
+            </li>
+            <li className='nav-item'>
               <Link onClick={handleLogout} to='/logout'>
                 Logout
               </Link>

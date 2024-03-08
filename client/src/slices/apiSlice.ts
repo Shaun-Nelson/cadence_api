@@ -36,6 +36,7 @@ export const apiSlice = createApi({
         url: "/playlists",
         method: "POST",
         body,
+        withCredentials: true,
       }),
       invalidatesTags: ["Playlist"],
     }),
@@ -44,11 +45,20 @@ export const apiSlice = createApi({
         url: "/playlists",
         method: "DELETE",
         body,
+        withCredentials: true,
       }),
       invalidatesTags: ["Playlist"],
     }),
     loginSpotify: builder.mutation({
       query: () => "/login/spotify",
+    }),
+    saveSpotifyPlaylist: builder.mutation({
+      query: (body) => ({
+        url: "/playlists/spotify",
+        method: "POST",
+        body,
+        withCredentials: true,
+      }),
     }),
   }),
 });
