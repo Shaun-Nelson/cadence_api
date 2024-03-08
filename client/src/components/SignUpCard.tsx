@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const SignUpCard = () => {
   const [username, setUsername] = useState("");
@@ -11,16 +12,20 @@ const SignUpCard = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/signup`, {
-        method: "POST",
-        body: JSON.stringify({ username, password }),
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-      const data = await response.json();
-      console.log(data);
+      if (password !== confirmPassword) {
+        toast.error("Passwords do not match");
+      } else {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/signup`, {
+          method: "POST",
+          body: JSON.stringify({ username, password }),
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        });
+        const data = await response.json();
+        console.log(data);
 
-      Navigate("/login");
+        Navigate("/login");
+      }
     } catch (error) {
       console.error(error);
     }

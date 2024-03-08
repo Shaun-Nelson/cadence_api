@@ -62,11 +62,11 @@ module.exports = {
         req.session.user_id = user._id;
         req.session.logged_in = true;
 
-        return res.status(201).json({ token });
+        return res.status(201).json({ id: user._id, username: user.username });
       });
     } catch (error) {
       console.error(error);
-      res.status(500).send({
+      res.status(500).json({
         message:
           "Error logging in. Please verify that your username and/or password is correct.",
       });

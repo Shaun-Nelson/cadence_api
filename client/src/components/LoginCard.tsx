@@ -1,27 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 import { useLoginMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
-import { RootState } from "../store";
-import { toast } from "react-toastify";
 
 const LoginCard = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const Navigate = useNavigate();
-  const dispatch = useDispatch();
-
   const [login] = useLoginMutation();
 
-  const { userInfo } = useSelector((state: RootState) => state.auth);
-
-  useEffect(() => {
-    if (userInfo) {
-      Navigate("/");
-    }
-  }, [userInfo, Navigate]);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -29,7 +20,7 @@ const LoginCard = () => {
     try {
       const res = await login({ username, password }).unwrap();
       dispatch(setCredentials({ ...res }));
-      Navigate("/");
+      navigate("/");
     } catch (error) {
       toast.error("Invalid username or password");
     }
@@ -51,6 +42,7 @@ const LoginCard = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+
         <button type='submit' style={{ marginTop: "1em" }}>
           Login
         </button>

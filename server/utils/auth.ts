@@ -20,7 +20,6 @@ module.exports = {
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 14,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
       });
     } catch (error) {
       console.error(error);

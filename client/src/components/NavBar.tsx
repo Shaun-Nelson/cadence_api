@@ -1,23 +1,34 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useLogoutMutation } from "../slices/usersApiSlice";
+import { logout } from "../slices/authSlice";
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
 
 const NavBar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  const [logoutUser] = useLogoutMutation();
+
+  const { userInfo } = useSelector((state: RootState) => state.auth);
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser({}).unwrap();
+      logout();
+      setIsLoggedIn(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    const checkLoginStatus = async () => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setIsLoggedIn(data.logged_in);
-      }
-    };
-
-    checkLoginStatus();
-  }, []);
+    if (userInfo) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [userInfo]);
 
   return (
     <nav>
@@ -35,7 +46,9 @@ const NavBar = () => {
               <Link to='/playlists'>My Playlists</Link>
             </li>
             <li className='nav-item'>
-              <Link to='/logout'>Logout</Link>
+              <Link onClick={handleLogout} to='/logout'>
+                Logout
+              </Link>
             </li>
           </>
         ) : (

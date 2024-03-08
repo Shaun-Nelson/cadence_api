@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const baseQuery = fetchBaseQuery({ baseUrl: "" });
+const baseQuery = fetchBaseQuery({ baseUrl: "/api" });
 
 export const apiSlice = createApi({
   baseQuery,
@@ -8,22 +8,28 @@ export const apiSlice = createApi({
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (body) => ({
-        url: "/api/login",
+        url: "/login",
         method: "POST",
         body,
+        withCredentials: true,
       }),
-      invalidatesTags: ["User"],
+    }),
+    isLoggedIn: builder.query({
+      query: () => "/login",
+      providesTags: ["User"],
+    }),
+    logout: builder.mutation({
+      query: () => "/logout",
     }),
     signup: builder.mutation({
       query: (body) => ({
-        url: "/api/signup",
+        url: "/signup",
         method: "POST",
         body,
       }),
-      invalidatesTags: ["User"],
     }),
-    getMyPlaylists: builder.query({
-      query: () => "/api/playlists",
+    getPlaylists: builder.query({
+      query: () => "/playlists",
       providesTags: ["Playlist"],
     }),
   }),
