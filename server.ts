@@ -20,7 +20,7 @@ const sess = {
     secure: process.env.NODE_ENV === "production", //secure is true in production
   },
   store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI,
+    mongoUrl: process.env.MONGO_URI,
   }),
 };
 
