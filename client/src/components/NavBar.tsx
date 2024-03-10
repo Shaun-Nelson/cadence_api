@@ -2,20 +2,21 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useLogoutMutation } from "../slices/usersApiSlice";
 import { logout } from "../slices/authSlice";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store";
 
 const NavBar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const [logoutUser] = useLogoutMutation();
+  const dispatch = useDispatch();
 
   const { userInfo } = useSelector((state: RootState) => state.auth);
 
   const handleLogout = async () => {
     try {
+      dispatch(logout());
       await logoutUser({}).unwrap();
-      logout();
       setIsLoggedIn(false);
     } catch (error) {
       console.error(error);

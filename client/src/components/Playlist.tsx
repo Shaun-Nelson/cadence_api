@@ -1,4 +1,3 @@
-import { useDeletePlaylistMutation } from "../slices/playlistApiSlice";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -30,17 +29,25 @@ type TrackType = {
   previewUrl: string;
 };
 
-const Playlist = ({ playlist }: PlaylistProps) => {
-  const [deletePlaylist] = useDeletePlaylistMutation();
-
-  const handlePlaylistDelete = async (name: string) => {
-    try {
-      await deletePlaylist({ name }).unwrap();
-    } catch (error) {
-      console.error(error);
-    }
+interface PlaylistProps {
+  playlist: {
+    name: string;
+    description: string;
+    tracks: {
+      title: string;
+      image: string;
+      link: string;
+      artists: [];
+      duration: string;
+      previewUrl: string;
+    }[];
+    link: string;
+    username: string;
   };
+  handlePlaylistDelete: (name: string) => void;
+}
 
+const Playlist = ({ playlist, handlePlaylistDelete }: PlaylistProps) => {
   return (
     <div className='playlist'>
       {playlist.name && (

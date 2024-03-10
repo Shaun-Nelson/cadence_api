@@ -10,7 +10,7 @@ module.exports = {
 
       res.status(200).json(playlists);
     } catch (error) {
-      res.status(500).send({ message: "Error getting playlists" });
+      res.status(500).json({ message: "Error getting playlists" });
     }
   },
   createPlaylist: async function (req: any, res: any) {
@@ -64,11 +64,10 @@ module.exports = {
 
     spotifyApi.refreshAccessToken().then(
       (data: any) => {
-        console.log("The access token has been refreshed!");
         spotifyApi.setAccessToken(data.body["access_token"]);
       },
       (err: any) => {
-        console.log("Could not refresh access token", err);
+        console.error("Could not refresh access token", err);
       }
     );
 

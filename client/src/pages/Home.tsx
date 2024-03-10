@@ -2,9 +2,9 @@
 import Searchbar from "../components/Searchbar";
 
 const Home = () => (
-  <div>
+  <section>
     <Searchbar />
-  </div>
+  </section>
 );
 
 export default Home;

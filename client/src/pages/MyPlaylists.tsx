@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useGetPlaylistsMutation } from "../slices/playlistApiSlice";
+import { useDeletePlaylistMutation } from "../slices/playlistApiSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
@@ -26,18 +27,29 @@ const MyPlaylists = () => {
 
   const [getPlaylists, { isLoading }] = useGetPlaylistsMutation();
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const data = await getPlaylists({}).unwrap();
-        setPlaylists(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const [deletePlaylist] = useDeletePlaylistMutation();
 
+  const getData = async () => {
+    try {
+      const data = await getPlaylists({}).unwrap();
+      setPlaylists(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handlePlaylistDelete = async (name: string) => {
+    try {
+      await deletePlaylist({ name }).unwrap();
+      await getData();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
     getData();
-  }, [getPlaylists]);
+  }, []);
 
   return (
     <div className='flex-container-column '>
@@ -52,7 +64,13 @@ const MyPlaylists = () => {
         </div>
       ) : playlists.length > 0 ? (
         playlists.map((playlist, index) => {
-          return <Playlist key={index} playlist={playlist} />;
+          return (
+            <Playlist
+              key={index}
+              playlist={playlist}
+              handlePlaylistDelete={handlePlaylistDelete}
+            />
+          );
         })
       ) : (
         <h2>No playlists found</h2>
