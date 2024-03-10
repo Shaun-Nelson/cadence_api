@@ -12,6 +12,14 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         withCredentials: true,
       }),
     }),
+    signup: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/signup`,
+        method: "POST",
+        body: data,
+        withCredentials: true,
+      }),
+    }),
     isLoggedIn: builder.mutation({
       query: () => ({
         url: `${USERS_URL}/login`,
@@ -37,4 +45,5 @@ export const {
   useIsLoggedInMutation,
   useLogoutMutation,
   useLoginSpotifyMutation,
+  useSignupMutation,
 } = usersApiSlice;
