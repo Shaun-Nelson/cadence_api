@@ -6,7 +6,7 @@ const MongoStore = require("connect-mongo");
 const cors = require("cors");
 const routes = require("./routes");
 const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+require("dotenv").config();
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -20,7 +20,7 @@ const sess = {
     secure: process.env.NODE_ENV === "production", //secure is true in production
   },
   store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI || "mongodb://localhost:27017/cadence_db",
+    mongoUrl: process.env.MONGODB_URI,
   }),
 };
 
