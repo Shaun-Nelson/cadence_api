@@ -36,13 +36,13 @@ app.use(cookieParser());
 app.use(session(sess));
 app.use("/api", routes);
 
-if (process.env.NODE_ENV === "production") {
-  app.set("trust proxy", 1); // trust first proxy for secure cookies
-  app.use(express.static(path.join(__dirname, "../client/build")));
-  app.get("*", (req: Request, res: any) => {
-    res.sendFile(path.join(__dirname, "../client/build", "index.html"));
-  });
-}
+// if (process.env.NODE_ENV === "production") {
+//   app.set("trust proxy", 1); // trust first proxy for secure cookies
+//   app.use(express.static(path.join(__dirname, "../client/build")));
+//   app.get("*", (req: Request, res: any) => {
+//     res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+//   });
+// }
 
 db.once("open", () => {
   app.listen(PORT, () => {
