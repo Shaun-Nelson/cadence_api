@@ -17,7 +17,6 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         url: `${USERS_URL}/signup`,
         method: "POST",
         body: data,
-        withCredentials: true,
       }),
     }),
     isLoggedIn: builder.mutation({

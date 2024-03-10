@@ -21,11 +21,11 @@ module.exports = {
         req.session.user_id = user._id;
         req.session.logged_in = true;
 
-        return res.status(200).send({ user });
+        return res.status(200).json({ user });
       });
     } catch (error) {
       console.error(error);
-      res.status(500).send({ message: "Error creating user" });
+      res.status(500).json({ message: "Error creating user" });
     }
   },
   updateUser: async function (req: any, res: any) {

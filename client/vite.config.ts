@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://cadence-79b16249daf1.herokuapp.com/",
+        target: "https://cadence-79b16249daf1.herokuapp.com",
         changeOrigin: true,
       },
     },
