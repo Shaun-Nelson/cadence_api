@@ -5,10 +5,9 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 3000,
     proxy: {
       "/api": {
-        target: "http://localhost:3001",
+        target: "https://cadence-79b16249daf1.herokuapp.com/",
         changeOrigin: true,
       },
     },
