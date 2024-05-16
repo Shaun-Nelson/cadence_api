@@ -16,15 +16,15 @@ module.exports = {
   createPlaylist: async function (req: any, res: any) {
     try {
       const tracks = JSON.parse(req.body.tracks);
-
-      const playlist = await Playlist.create({
+      const playlistConfig = {
         name: req.body.name,
         description: req.body.playlistDescription
           ? req.body.playlistDescription
           : "",
         tracks,
         username: req.user.username,
-      });
+      };
+      const playlist = await Playlist.create(playlistConfig);
 
       return res.status(201).json({ message: "Playlist created", playlist });
     } catch (error) {
@@ -45,13 +45,19 @@ module.exports = {
     }
   },
   createSpotifyPlaylist: async function (req: any, res: any) {
-    const { name, description } = req.body;
-    const tracks = JSON.parse(req.body.tracks);
-
     if (!req.session.refresh_token) {
+      return res.status(401).json({
+        message: "Unauthorized. Please connect to Spotify first.",
+      });
+    }
+
+    const { name, description } = req.body;
+    const tracks = req.body.tracks ? JSON.parse(req.body.tracks) : [];
+
+    if (!tracks) {
       return res
-        .status(401)
-        .json({ message: "Unauthorized. Please connect to Spotify first." });
+        .status(400)
+        .json({ message: "Please provide tracks to add to playlist" });
     }
 
     const spotifyApi = new spotifyWebApi({
@@ -62,33 +68,15 @@ module.exports = {
       accessToken: req.cookies.access_token,
     });
 
-    spotifyApi.refreshAccessToken().then(
-      (data: any) => {
-        spotifyApi.setAccessToken(data.body["access_token"]);
-      },
-      (err: any) => {
-        console.error("Could not refresh access token", err);
-      }
-    );
+    refreshSpotifyTokens(spotifyApi);
 
     try {
-      const playlist = await spotifyApi.createPlaylist(name, {
-        description,
-        public: true,
-      });
-
-      const playlistId = playlist.body.id;
-
-      if (tracks) {
-        const tracksToAdd = tracks.map((track: any) => track.link);
-        try {
-          await spotifyApi.addTracksToPlaylist(playlistId, tracksToAdd);
-        } catch (error) {
-          return res
-            .status(500)
-            .json({ message: `Error adding tracks to playlist: ${error}` });
-        }
-      }
+      const playlist = await createSpotifyPlaylist(
+        spotifyApi,
+        tracks,
+        name,
+        description
+      );
 
       return res.status(201).json({ message: "Playlist created", playlist });
     } catch (error) {
@@ -97,4 +85,39 @@ module.exports = {
         .json({ message: `Error creating playlist: ${error}` });
     }
   },
+};
+
+const refreshSpotifyTokens = async (spotifyApi: any) => {
+  spotifyApi.refreshAccessToken().then(
+    (data: any) => {
+      spotifyApi.setAccessToken(data.body["access_token"]);
+    },
+    (err: any) => {
+      console.error("Could not refresh access token", err);
+    }
+  );
+};
+
+const createSpotifyPlaylist = async (
+  spotifyApi: any,
+  tracks: any,
+  name: string,
+  description: string
+) => {
+  const tracksToAdd = tracks.map((track: any) => track.link);
+
+  try {
+    const playlist = await spotifyApi.createPlaylist(name, {
+      description,
+      public: true,
+    });
+    const playlistId = playlist.body.id;
+
+    await spotifyApi.addTracksToPlaylist(playlistId, tracksToAdd);
+
+    return playlist;
+  } catch (error) {
+    console.error("Error creating Spotify playlist", error);
+    return { message: "Error creating Spotify playlist" };
+  }
 };

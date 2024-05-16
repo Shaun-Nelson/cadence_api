@@ -1,17 +1,13 @@
 const express = require("express");
 const db = require("./config/connection");
 const session = require("express-session");
-const cookieParser = require("cookie-parser");
 const MongoStore = require("connect-mongo");
 const cors = require("cors");
 const routes = require("./routes");
-const path = require("path");
 require("dotenv").config();
 
 const PORT = process.env.PORT || 3001;
 const app = express();
-
-//Set up express app to use sessions
 const sess = {
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -20,7 +16,10 @@ const sess = {
     secure: process.env.NODE_ENV === "production", //secure is true in production
   },
   store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
+    mongoUrl:
+      process.env.NODE_ENV === "production"
+        ? process.env.MONGODB_URI
+        : "mongodb://localhost:27017/cadence_db",
   }),
 };
 
@@ -32,17 +31,8 @@ app.use(
     credentials: true,
   })
 );
-app.use(cookieParser());
 app.use(session(sess));
 app.use("/api", routes);
-
-// if (process.env.NODE_ENV === "production") {
-//   app.set("trust proxy", 1); // trust first proxy for secure cookies
-//   app.use(express.static(path.join(__dirname, "../client/build")));
-//   app.get("*", (req: Request, res: any) => {
-//     res.sendFile(path.join(__dirname, "../client/build", "index.html"));
-//   });
-// }
 
 db.once("open", () => {
   app.listen(PORT, () => {

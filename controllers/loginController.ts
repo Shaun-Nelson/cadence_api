@@ -56,7 +56,7 @@ module.exports = {
         return res.status(400).send({ message: "Invalid password" });
       }
 
-      const token = signToken(res, user._id);
+      signToken(res, user._id);
 
       req.session.save(() => {
         req.session.user_id = user._id;

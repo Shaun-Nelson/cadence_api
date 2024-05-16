@@ -3,17 +3,18 @@ const SpotifyWebApi = require("spotify-web-api-node");
 require("dotenv").config();
 
 module.exports = {
-  // OpenAI API
   async openAI(req: any, res: any) {
-    const openai = new OpenAI();
+    const MODEL = "gpt-4o";
+    const TEMPERATURE = 0;
+    const MAX_TOKENS = 3500;
 
-    try {
-      const chatCompletion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content: `You are an assistant that only responds in JSON.
+    const openai = new OpenAI();
+    const chat = {
+      model: MODEL,
+      messages: [
+        {
+          role: "system",
+          content: `You are an assistant that only responds in JSON.
       Create a list of ${req.body.length} unique songs based off the following
       statement: "${req.body.input}". Include "id", "title", "artist", "album", and "duration"
       in your response. An example response is: "
@@ -27,59 +28,26 @@ module.exports = {
         }
       ]
       ".`,
-          },
-        ],
-        temperature: 0,
-        max_tokens: 3500,
-      });
+        },
+      ],
+      temperature: TEMPERATURE,
+      max_tokens: MAX_TOKENS,
+    };
 
-      // Parse the JSON response, get the songs array
+    try {
+      const chatCompletion = await openai.chat.completions.create(chat);
       const songs = JSON.parse(chatCompletion.choices[0].message.content);
-
-      // If the Spotify API is not already authorized, authorize it
       const spotifyApi = new SpotifyWebApi({
         clientId: process.env.CLIENT_ID,
         clientSecret: process.env.CLIENT_SECRET,
         redirectUri: process.env.REDIRECT_URI,
       });
 
-      //get access token
-      const data = await spotifyApi.clientCredentialsGrant();
-      const accessToken = data.body["access_token"];
-      spotifyApi.setAccessToken(accessToken);
+      await getSpotifyAccessToken(spotifyApi);
 
-      // iterate through the songs and add the preview url, image, and uri of each song
-      for (let song in songs) {
-        const searchResults = await spotifyApi.searchTracks(
-          songs[song].title + " " + songs[song].artist
-        );
+      await getSongsMetadata(songs, spotifyApi);
 
-        songs[song].previewUrl = searchResults.body.tracks.items[0].preview_url;
-
-        songs[song].image =
-          searchResults.body.tracks.items[0].album.images[0].url;
-
-        songs[song].uri = searchResults.body.tracks.items[0].uri;
-
-        //get artists as an array
-        songs[song].artists = songs[song].artist.split(",");
-      }
-
-      let results = [];
-
-      // iterate through the songs and create a new array of Track objects
-      for (let song in songs) {
-        results.push({
-          title: songs[song].title,
-          artists: songs[song].artists,
-          duration: songs[song].duration,
-          previewUrl: songs[song].previewUrl,
-          link: songs[song].uri,
-          image: songs[song].image,
-        });
-      }
-
-      res.status(200).send(results);
+      res.status(200).send(getTracks(songs));
     } catch (error) {
       if ((error as any).response) {
         console.log((error as any).response.data);
@@ -91,8 +59,44 @@ module.exports = {
         res.status(500).send({ message: "Invalid OpenAI token" });
       } else {
         console.error("Error", error);
-        res.status(500).send({ message: "Invalid OpenAI token" });
+        res.status(500).send({ message: `OpenAI Error: ${error}` });
       }
     }
   },
+};
+
+const getSpotifyAccessToken = async (spotifyApi: any) => {
+  const data = await spotifyApi.clientCredentialsGrant();
+  const accessToken = data.body["access_token"];
+  spotifyApi.setAccessToken(accessToken);
+};
+
+const getSongsMetadata = async (songs: any, spotifyApi: any) => {
+  for (let song in songs) {
+    const searchResults = await spotifyApi.searchTracks(
+      songs[song].title + " " + songs[song].artist
+    );
+
+    songs[song].previewUrl = searchResults.body.tracks.items[0].preview_url;
+    songs[song].image = searchResults.body.tracks.items[0].album.images[0].url;
+    songs[song].uri = searchResults.body.tracks.items[0].uri;
+    songs[song].artists = songs[song].artist.split(", ");
+  }
+};
+
+const getTracks = (songs: any) => {
+  let tracks = [];
+
+  for (let song in songs) {
+    tracks.push({
+      title: songs[song].title,
+      artists: songs[song].artists,
+      duration: songs[song].duration,
+      previewUrl: songs[song].previewUrl,
+      link: songs[song].uri,
+      image: songs[song].image,
+    });
+  }
+
+  return tracks;
 };
